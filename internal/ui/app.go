@@ -53,11 +53,12 @@ func NewApp(cfg *config.Config, _ string) *App {
 
 // Init initializes the application.
 func (a *App) Init() {
+	// 绑定快捷键
 	a.bindKeys()
 	a.Prompt().SetModel(a.cmdBuff)
 	a.cmdBuff.AddListener(a)
 	a.Styles.AddListener(a)
-
+	// 设置应用程序的根视图 是一个Main容器,里面存了很多个页面
 	a.SetRoot(a.Main, true).EnableMouse(a.Config.K9s.UI.EnableMouse)
 }
 

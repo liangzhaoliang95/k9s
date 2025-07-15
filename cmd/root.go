@@ -116,9 +116,12 @@ func run(*cobra.Command, []string) error {
 		app.Config.SetActiveView(app.Config.K9s.DefaultView)
 	}
 
+	// 应用初始化
 	if err := app.Init(version, *k9sFlags.RefreshRate); err != nil {
 		return err
 	}
+
+	// 应用启动
 	if err := app.Run(); err != nil {
 		return err
 	}

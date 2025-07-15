@@ -101,11 +101,16 @@ func (a *App) Init(version string, _ int) error {
 	if err := a.Content.Init(ctx); err != nil {
 		return err
 	}
-	a.Content.AddListener(a.Crumbs())
-	a.Content.AddListener(a.Menu())
 
+	// 面包屑组件添加监听
+	a.Content.AddListener(a.Crumbs())
+	// 菜单组件添加监听
+	a.Content.AddListener(a.Menu())
+	// UI 初始化
 	a.App.Init()
+
 	a.SetInputCapture(a.keyboard)
+	// 绑定快捷键
 	a.bindKeys()
 	if a.Conn() == nil {
 		return errors.New("no client connection detected")
@@ -129,12 +134,17 @@ func (a *App) Init(version string, _ int) error {
 	}
 	a.CmdBuff().SetSuggestionFn(a.suggestCommand())
 
+	// 初始化布局
 	a.layout(ctx)
+
+	// 初始化信号监听
 	a.initSignals()
 
 	if a.Config.K9s.ImageScans.Enable {
 		a.initImgScanner(version)
 	}
+
+	// 刷新样式
 	a.ReloadStyles()
 
 	return nil
@@ -159,17 +169,25 @@ func (a *App) layout(ctx context.Context) {
 	flash := ui.NewFlash(a.App)
 	go flash.Watch(ctx, a.Flash().Channel())
 
+	// 主页是一个flex布局应用 方向是垂直的
 	main := tview.NewFlex().SetDirection(tview.FlexRow)
+	// 状态指示器
 	main.AddItem(a.statusIndicator(), 1, 1, false)
+	// 内容区域 展示集群资源信息
 	main.AddItem(a.Content, 0, 10, true)
+	// 底部面包屑组件
 	if !a.Config.K9s.IsCrumbsless() {
 		main.AddItem(a.Crumbs(), 1, 1, false)
 	}
+	// 最底部消息提示组件
 	main.AddItem(flash, 1, 1, false)
 
+	// 往main容器里面添加main组件
 	a.Main.AddPage("main", main, true, false)
+	// 设置头部
 	a.toggleHeader(!a.Config.K9s.IsHeadless(), !a.Config.K9s.IsLogoless())
 	if !a.Config.K9s.IsSplashless() {
+		// main容器添加启动画面
 		a.Main.AddPage("splash", ui.NewSplash(a.Styles, a.version), true, true)
 	}
 }
