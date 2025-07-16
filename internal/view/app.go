@@ -66,7 +66,7 @@ func NewApp(cfg *config.Config) *App {
 		App:           ui.NewApp(cfg, cfg.K9s.ActiveContextName()),
 		cmdHistory:    model.NewHistory(model.MaxHistory),
 		filterHistory: model.NewHistory(model.MaxHistory),
-		Content:       NewPageStack(),
+		Content:       NewPageStack(), // 新建内容页面堆栈
 	}
 	a.ReloadStyles()
 
