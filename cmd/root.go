@@ -112,7 +112,7 @@ func run(*cobra.Command, []string) error {
 		slog.Warn("Fail to load global/context configuration", slogs.Error, err)
 	}
 
-	// 新建应用
+	// 新建k9s应用实例
 	app := view.NewApp(cfg)
 	if app.Config.K9s.DefaultView != "" {
 		app.Config.SetActiveView(app.Config.K9s.DefaultView)

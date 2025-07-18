@@ -57,8 +57,9 @@ func (c *Command) Init(path string) error {
 		slog.Error("Ensure aliases failed", slogs.Error, err)
 		return err
 	}
+	// 加载自定义的几个视图
 	customViewers = loadCustomViewers()
-
+	slog.Info("LXZ Custom viewers loaded")
 	return nil
 }
 
@@ -159,9 +160,11 @@ func (c *Command) xrayCmd(p *cmd.Interpreter, pushCmd bool) error {
 
 // Run execs the command by showing associated display.
 func (c *Command) run(p *cmd.Interpreter, fqn string, clearStack, pushCmd bool) error {
+	// 特殊指令
 	if c.specialCmd(p, pushCmd) {
 		return nil
 	}
+	// 视图指令 找到视图
 	gvr, v, err := c.viewMetaFor(p)
 	if err != nil {
 		return err
@@ -205,6 +208,7 @@ func (c *Command) run(p *cmd.Interpreter, fqn string, clearStack, pushCmd bool) 
 		p.ClearNS()
 	}
 
+	// 找到对应的组件
 	co := c.componentFor(gvr, fqn, v)
 	co.SetFilter("")
 	co.SetLabelSelector(labels.Everything())
@@ -306,6 +310,8 @@ func (c *Command) viewMetaFor(p *cmd.Interpreter) (*client.GVR, *MetaViewer, err
 			return NewScaleExtender(NewOwnerExtender(NewBrowser(gvr)))
 		},
 	}
+
+	// 获取视图
 	if mv, ok := customViewers[gvr]; ok {
 		v = mv
 	}
@@ -316,8 +322,10 @@ func (c *Command) viewMetaFor(p *cmd.Interpreter) (*client.GVR, *MetaViewer, err
 func (*Command) componentFor(gvr *client.GVR, fqn string, v *MetaViewer) ResourceViewer {
 	var view ResourceViewer
 	if v.viewerFn != nil {
+		// 使用自定义的视图函数
 		view = v.viewerFn(gvr)
 	} else {
+		// 使用默认的浏览器视图
 		view = NewBrowser(gvr)
 	}
 

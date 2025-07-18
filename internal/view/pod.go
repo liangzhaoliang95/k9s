@@ -50,6 +50,7 @@ type Pod struct {
 
 // NewPod returns a new viewer.
 func NewPod(gvr *client.GVR) ResourceViewer {
+	slog.Info("LXZ NewPod", slogs.GVR, gvr.GVR())
 	var p Pod
 	p.ResourceViewer = NewPortForwardExtender(
 		NewOwnerExtender(

@@ -33,14 +33,21 @@ type App struct {
 // NewApp returns a new app.
 func NewApp(cfg *config.Config, _ string) *App {
 	a := App{
-		Application:  tview.NewApplication(),
-		actions:      NewKeyActions(),
+		// 应用本体
+		Application: tview.NewApplication(),
+		// 存放快捷键的行为
+		actions: NewKeyActions(),
+		// 配置器
 		Configurator: Configurator{Config: cfg, Styles: config.NewStyles()},
-		Main:         NewPages(),
-		flash:        model.NewFlash(model.DefaultFlashDelay),
-		cmdBuff:      model.NewFishBuff(':', model.CommandBuffer),
+		// 主页面容器
+		Main: NewPages(),
+		// 提示器
+		flash: model.NewFlash(model.DefaultFlashDelay),
+		// 命令缓冲区
+		cmdBuff: model.NewFishBuff(':', model.CommandBuffer),
 	}
 
+	// 初始化应用的部分小组件
 	a.views = map[string]tview.Primitive{
 		"menu":   NewMenu(a.Styles),                                // 菜单
 		"logo":   NewLogo(a.Styles),                                // logo
@@ -144,6 +151,7 @@ func (a *App) Conn() client.Connection {
 
 func (a *App) bindKeys() {
 	a.actions = NewKeyActionsFromMap(KeyMap{
+		// 激活命令行模式
 		KeyColon:       NewKeyAction("Cmd", a.activateCmd, false),
 		tcell.KeyCtrlR: NewKeyAction("Redraw", a.redrawCmd, false),
 		tcell.KeyCtrlP: NewKeyAction("Persist", a.saveCmd, false),

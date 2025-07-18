@@ -39,7 +39,7 @@ var ExitStatus = ""
 const (
 	splashDelay      = 1 * time.Second
 	clusterRefresh   = 15 * time.Second
-	clusterInfoWidth = 50
+	clusterInfoWidth = 25
 	clusterInfoPad   = 15
 )
 
@@ -63,14 +63,21 @@ type App struct {
 // NewApp returns a K9s app instance.
 func NewApp(cfg *config.Config) *App {
 	a := App{
-		App:           ui.NewApp(cfg, cfg.K9s.ActiveContextName()),
-		cmdHistory:    model.NewHistory(model.MaxHistory),
+		// 初始化UI-APP
+		App: ui.NewApp(cfg, cfg.K9s.ActiveContextName()),
+		// 命令行历史
+		cmdHistory: model.NewHistory(model.MaxHistory),
+		// 过滤器历史
 		filterHistory: model.NewHistory(model.MaxHistory),
-		Content:       NewPageStack(), // 新建内容页面堆栈
+		// 应用内容主体 本质是个pages容器，是核心
+		Content: NewPageStack(),
 	}
 	a.ReloadStyles()
 
+	// 初始化应用的部分小组件
+	// 状态指示器组件
 	a.Views()["statusIndicator"] = ui.NewStatusIndicator(a.App, a.Styles)
+	// 集群信息组件
 	a.Views()["clusterInfo"] = NewClusterInfo(&a)
 
 	return &a
@@ -106,7 +113,7 @@ func (a *App) Init(version string, _ int) error {
 	a.Content.AddListener(a.Crumbs())
 	// 菜单组件添加监听
 	a.Content.AddListener(a.Menu())
-	// UI 初始化
+	// 快捷键+数据初始化
 	a.App.Init()
 
 	a.SetInputCapture(a.keyboard)
@@ -337,7 +344,8 @@ func (a *App) buildHeader() tview.Primitive {
 			}
 		}
 	}
-	header.AddItem(a.clusterInfo(), clWidth, 1, false)
+	slog.Info("ClusterInfo width", clWidth)
+	//header.AddItem(a.clusterInfo(), clWidth, 1, false)
 	header.AddItem(a.Menu(), 0, 1, false)
 
 	if a.showLogo {
@@ -790,8 +798,9 @@ func (a *App) gotoResource(c, path string, clearStack, pushCmd bool) {
 	}
 }
 
-// 往应用中注入一个组件
+// 往应用中注入一个组件 一般用于激活某个页面
 func (a *App) inject(c model.Component, clearStack bool) error {
+	slog.Info("Injecting component", c)
 	ctx := context.WithValue(context.Background(), internal.KeyApp, a)
 	if err := c.Init(ctx); err != nil {
 		slog.Error("Component init failed",
