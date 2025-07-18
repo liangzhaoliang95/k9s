@@ -42,10 +42,10 @@ func NewApp(cfg *config.Config, _ string) *App {
 	}
 
 	a.views = map[string]tview.Primitive{
-		"menu":   NewMenu(a.Styles),
-		"logo":   NewLogo(a.Styles),
-		"prompt": NewPrompt(&a, a.Config.K9s.UI.NoIcons, a.Styles),
-		"crumbs": NewCrumbs(a.Styles),
+		"menu":   NewMenu(a.Styles),                                // 菜单
+		"logo":   NewLogo(a.Styles),                                // logo
+		"prompt": NewPrompt(&a, a.Config.K9s.UI.NoIcons, a.Styles), // 命令终端组件
+		"crumbs": NewCrumbs(a.Styles),                              // 面包屑
 	}
 
 	return &a
@@ -108,7 +108,7 @@ func (a *App) BufferActive(state bool, _ model.BufferKind) {
 	if !ok {
 		return
 	}
-
+	// 显示出prompt控件
 	if state && flex.ItemAt(1) != a.Prompt() {
 		flex.AddItemAtIndex(1, a.Prompt(), 3, 1, false)
 	} else if !state && flex.ItemAt(1) == a.Prompt() {

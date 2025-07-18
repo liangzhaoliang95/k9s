@@ -99,6 +99,7 @@ func (s *Stack) Push(c Component) {
 	s.mx.Lock()
 	s.components = append(s.components, c)
 	s.mx.Unlock()
+	slog.Error("Pushing component onto stack %s", c.Name())
 	s.notify(StackPush, c)
 }
 

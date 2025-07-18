@@ -128,6 +128,7 @@ func (a *App) Init(version string, _ int) error {
 		a.clusterInfo().Init()
 	}
 
+	// 初始化命令组件 通过命令实现页面的
 	a.command = NewCommand(a)
 	if err := a.command.Init(a.Config.ContextAliasesPath()); err != nil {
 		return err
@@ -789,6 +790,7 @@ func (a *App) gotoResource(c, path string, clearStack, pushCmd bool) {
 	}
 }
 
+// 往应用中注入一个组件
 func (a *App) inject(c model.Component, clearStack bool) error {
 	ctx := context.WithValue(context.Background(), internal.KeyApp, a)
 	if err := c.Init(ctx); err != nil {
