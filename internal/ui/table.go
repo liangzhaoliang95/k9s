@@ -60,6 +60,7 @@ type Table struct {
 
 // NewTable returns a new table view.
 func NewTable(gvr *client.GVR) *Table {
+	slog.Info("LXZ Table component will be created", "gvr", gvr)
 	return &Table{
 		SelectTable: &SelectTable{
 			Table: tview.NewTable(),
@@ -168,7 +169,7 @@ func (t *Table) SetContext(ctx context.Context) {
 func (t *Table) Init(ctx context.Context) {
 	t.SetFixed(1, 0)
 	t.SetBorder(true)
-	t.SetBorderAttributes(tcell.AttrBold)
+	t.SetBorderAttributes(tcell.AttrBlink)
 	t.SetBorderPadding(0, 0, 1, 1)
 	t.SetSelectable(true, false)
 	t.SetSelectionChangedFunc(t.selectionChanged)
@@ -197,6 +198,7 @@ func (t *Table) ViewSettingsChanged(vs *config.ViewSetting) {
 
 // StylesChanged notifies the skin changed.
 func (t *Table) StylesChanged(s *config.Styles) {
+	// 刷新表格样式
 	t.SetBackgroundColor(s.Table().BgColor.Color())
 	t.SetBorderColor(s.Frame().Border.FgColor.Color())
 	t.SetBorderFocusColor(s.Frame().Border.FocusColor.Color())

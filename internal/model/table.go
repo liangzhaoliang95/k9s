@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	backoff "github.com/cenkalti/backoff/v4"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/derailed/k9s/internal"
 	"github.com/derailed/k9s/internal/client"
 	"github.com/derailed/k9s/internal/config"
@@ -211,6 +211,7 @@ func (t *Table) updater(ctx context.Context) {
 		case <-time.After(rate):
 			rate = t.refreshRate
 			err := backoff.Retry(func() error {
+				//slog.Info("LXZ timer auto refreshing tableData and redraw", slogs.GVR, t.gvr)
 				if err := t.refresh(ctx); err != nil {
 					slog.Error("Refresh failed", slogs.GVR, t.gvr)
 					return err
@@ -266,6 +267,7 @@ func (t *Table) list(ctx context.Context, a dao.Accessor) ([]runtime.Object, err
 }
 
 func (t *Table) reconcile(ctx context.Context) error {
+	// 解调数据,定时刷新列表
 	var (
 		oo  []runtime.Object
 		err error
@@ -287,10 +289,13 @@ func (t *Table) reconcile(ctx context.Context) error {
 	r := meta.Renderer
 	r.SetViewSetting(t.vs)
 
+	//slog.Info("LXZ Table reconcile resourceMeta done", "meta", meta, "oo", oo)
+
 	return t.data.Render(ctx, meta.Renderer, oo)
 }
 
 func (t *Table) fireTableChanged(data *model1.TableData) {
+	//slog.Info("LXZ Table fireTableChanged", "gvr", t.gvr, "data", data)
 	var ll []TableListener
 	t.mx.RLock()
 	ll = t.listeners

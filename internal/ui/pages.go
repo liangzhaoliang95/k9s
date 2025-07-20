@@ -57,6 +57,7 @@ func (p *Pages) Current() model.Component {
 
 // AddAndShow adds a new page and bring it to front.
 func (p *Pages) addAndShow(c model.Component) {
+	slog.Info("LXZ Pages addAndShow 页面切换 💥", slogs.Component, c.Name())
 	p.add(c)
 	p.Show(c)
 }
@@ -83,6 +84,7 @@ func (p *Pages) Dump() {
 
 // StackPushed notifies a new component was pushed.
 func (p *Pages) StackPushed(c model.Component) {
+	slog.Info("LXZ Pages StackPushed", slogs.Component, c.Name())
 	p.addAndShow(c)
 }
 

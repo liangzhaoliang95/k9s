@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sort"
 	"strings"
 
@@ -33,7 +34,7 @@ func NewAlias(f Factory) *Alias {
 		Aliases: config.NewAliases(),
 	}
 	a.Init(f, client.AliGVR)
-
+	slog.Info("Initializing aliases", "gvr", client.AliGVR)
 	return &a
 }
 

@@ -6,9 +6,11 @@ package view
 import (
 	"github.com/derailed/k9s/internal/client"
 	"github.com/derailed/k9s/internal/model1"
+	"github.com/derailed/k9s/internal/slogs"
 	"github.com/derailed/k9s/internal/ui"
 	"github.com/derailed/tcell/v2"
 	"k8s.io/apimachinery/pkg/util/sets"
+	"log/slog"
 )
 
 const (
@@ -23,6 +25,7 @@ type Namespace struct {
 
 // NewNamespace returns a new viewer.
 func NewNamespace(gvr *client.GVR) ResourceViewer {
+	slog.Info("LXZ NewNamespace", slogs.GVR, gvr.GVR())
 	n := Namespace{
 		ResourceViewer: NewBrowser(gvr),
 	}
@@ -41,6 +44,7 @@ func (n *Namespace) bindKeys(aa *ui.KeyActions) {
 }
 
 func (n *Namespace) switchNs(app *App, _ ui.Tabular, _ *client.GVR, path string) {
+	slog.Info("LXZ Namespace switchNs", "path", path)
 	n.useNamespace(path)
 	_, ns := client.Namespaced(path)
 	app.gotoResource(client.PodGVR.String()+" "+ns, "", false, true)

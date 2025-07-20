@@ -4,10 +4,13 @@
 package view
 
 import (
+	"fmt"
 	"github.com/derailed/k9s/internal/client"
+	"log/slog"
 )
 
 func loadCustomViewers() MetaViewers {
+	slog.Info("LXZ Loading custom viewers start")
 	m := make(MetaViewers, 30)
 	coreViewers(m)
 	miscViewers(m)
@@ -16,7 +19,10 @@ func loadCustomViewers() MetaViewers {
 	batchViewers(m)
 	crdViewers(m)
 	helmViewers(m)
-
+	slog.Info(fmt.Sprintf("LXZ Loading custom viewers done"), "count", len(m))
+	for gvr, viewer := range m {
+		slog.Info("LXZ Registering viewer 👀", "gvr", gvr, "viewer", viewer.viewerFn, "enter", viewer.enterFn)
+	}
 	return m
 }
 

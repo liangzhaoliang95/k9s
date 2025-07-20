@@ -57,6 +57,10 @@ func (c *Command) Init(path string) error {
 		slog.Error("Ensure aliases failed", slogs.Error, err)
 		return err
 	}
+	slog.Info("LXZ Aliases loaded", "path", path, "count", len(c.alias.Alias))
+	for s, gvr := range c.alias.Alias {
+		slog.Info("LXZ Alias 🔑", "alias", s, "gvr", gvr.String())
+	}
 	// 加载自定义的几个视图
 	customViewers = loadCustomViewers()
 	slog.Info("LXZ Custom viewers loaded")
@@ -169,6 +173,7 @@ func (c *Command) run(p *cmd.Interpreter, fqn string, clearStack, pushCmd bool) 
 	if err != nil {
 		return err
 	}
+	slog.Info("LXZ successfully found gvr", "gvr", gvr.String(), "fqn", fqn)
 
 	if context, ok := p.HasContext(); ok {
 		if context != c.app.Config.ActiveContextName() {
@@ -209,6 +214,7 @@ func (c *Command) run(p *cmd.Interpreter, fqn string, clearStack, pushCmd bool) 
 	}
 
 	// 找到对应的组件
+	slog.Info("LXZ will create component for", "gvr", gvr.String(), "fqn", fqn, "view", v)
 	co := c.componentFor(gvr, fqn, v)
 	co.SetFilter("")
 	co.SetLabelSelector(labels.Everything())
@@ -221,12 +227,13 @@ func (c *Command) run(p *cmd.Interpreter, fqn string, clearStack, pushCmd bool) 
 	if ss, ok := p.LabelsArg(); ok {
 		co.SetLabelSelector(labels.SelectorFromSet(ss))
 	}
-
+	slog.Info("LXZ command will run 👉", "cmd", p.GetLine(), "gvr", gvr.String(), "fqn", fqn, "component", co, "clearStack", clearStack, "pushCmd", pushCmd)
 	return c.exec(p, gvr, co, clearStack, pushCmd)
 }
 
 func (c *Command) defaultCmd(isRoot bool) error {
 	if c.app.Conn() == nil || !c.app.Conn().ConnectionOK() {
+		slog.Error("💻 LXZ Connection not ready, cannot run default command")
 		return c.run(cmd.NewInterpreter("context"), "", true, true)
 	}
 
@@ -236,15 +243,18 @@ func (c *Command) defaultCmd(isRoot bool) error {
 	}
 	p := cmd.NewInterpreter(c.app.Config.ActiveView())
 	if p.IsBlank() {
+		slog.Info("💻 LXZ Executing default command because of cmd is blank", "cmd", defCmd)
 		return c.run(p.Reset(defCmd), "", true, true)
 	}
 
+	slog.Info("💻 LXZ Executing  📌 cmd", "cmd", p.GetLine())
 	if err := c.run(p, "", true, true); err != nil {
-		slog.Error("Command exec failed. Using default command",
+		slog.Error("💻 LXZ Command exec failed. Using default command",
 			slogs.Command, p.GetLine(),
 			slogs.Error, err,
 		)
 		p = p.Reset(defCmd)
+		slog.Info("💻 LXZ Executing default command", "cmd", p.GetLine())
 		return c.run(p, "", true, true)
 	}
 
@@ -297,7 +307,9 @@ func (c *Command) specialCmd(p *cmd.Interpreter, pushCmd bool) bool {
 }
 
 func (c *Command) viewMetaFor(p *cmd.Interpreter) (*client.GVR, *MetaViewer, error) {
+	slog.Info("LXZ 寻找 viewMetaFor", "line", p.GetLine(), "cmd", p.Cmd())
 	gvr, exp, ok := c.alias.AsGVR(p.Cmd())
+	slog.Info("LXZ viewMetaFor found gvr", "gvr", gvr, "exp", exp, "ok", ok)
 	if !ok {
 		return client.NoGVR, nil, fmt.Errorf("`%s` command not found", p.Cmd())
 	}
@@ -313,9 +325,10 @@ func (c *Command) viewMetaFor(p *cmd.Interpreter) (*client.GVR, *MetaViewer, err
 
 	// 获取视图
 	if mv, ok := customViewers[gvr]; ok {
+		slog.Info("LXZ viewMetaFor found custom viewer", "gvr", gvr, "viewer", mv)
 		v = mv
 	}
-
+	slog.Info("LXZ viewMetaFor found viewer", "gvr", gvr, "viewer", v)
 	return gvr, &v, nil
 }
 
@@ -333,6 +346,7 @@ func (*Command) componentFor(gvr *client.GVR, fqn string, v *MetaViewer) Resourc
 	if v.enterFn != nil {
 		view.GetTable().SetEnterFn(v.enterFn)
 	}
+	slog.Info("LXZ componentFor created view done", "gvr", gvr, "fqn", fqn, "view", view)
 
 	return view
 }
@@ -350,6 +364,7 @@ func (c *Command) exec(p *cmd.Interpreter, gvr *client.GVR, comp model.Component
 			if ok {
 				ci = ci.Reset(currentCommand)
 			}
+			slog.Info("LXZ Executing default command because of cmd failed", "cmd", ci.GetLine())
 			err = c.run(ci, "", true, true)
 		}
 	}()
@@ -363,6 +378,7 @@ func (c *Command) exec(p *cmd.Interpreter, gvr *client.GVR, comp model.Component
 		v := contextRX.ReplaceAllString(p.GetLine(), "")
 		c.app.Config.SetActiveView(v)
 	}
+	slog.Info("LXZ inject component 💉", "component", comp)
 	if err := c.app.inject(comp, clearStack); err != nil {
 		return err
 	}

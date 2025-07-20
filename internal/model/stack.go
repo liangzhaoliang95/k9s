@@ -99,7 +99,7 @@ func (s *Stack) Push(c Component) {
 	s.mx.Lock()
 	s.components = append(s.components, c)
 	s.mx.Unlock()
-	slog.Info("LXZ Pushing component onto stack", c.Name())
+	slog.Info("LXZ Pushing component onto content pageStack will notify⛔", "component", c.Name())
 	s.notify(StackPush, c)
 }
 
@@ -173,7 +173,9 @@ func (s *Stack) Top() Component {
 }
 
 func (s *Stack) notify(a StackAction, c Component) {
+	slog.Info("LXZ exec notify 🚨", "action", a, "component", c.Name(), "listeners", len(s.listeners))
 	for _, l := range s.listeners {
+		slog.Info("LXZ Notifying listener 📣", "listener", l)
 		switch a {
 		case StackPush:
 			l.StackPushed(c)

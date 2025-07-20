@@ -173,6 +173,7 @@ func (b *Browser) Start() {
 	b.GetModel().AddListener(b)
 	b.Table.Start()
 	b.CmdBuff().AddListener(b)
+	slog.Info("LXZ Browser component will watch data")
 	if err := b.GetModel().Watch(b.prepareContext()); err != nil {
 		go func() {
 			time.Sleep(500 * time.Millisecond)

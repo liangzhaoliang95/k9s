@@ -79,6 +79,7 @@ func NewApp(cfg *config.Config) *App {
 	a.Views()["statusIndicator"] = ui.NewStatusIndicator(a.App, a.Styles)
 	// 集群信息组件
 	a.Views()["clusterInfo"] = NewClusterInfo(&a)
+	slog.Info("LXZ 目前只完成了实例的初始化")
 
 	return &a
 }
@@ -154,6 +155,8 @@ func (a *App) Init(version string, _ int) error {
 
 	// 刷新样式
 	a.ReloadStyles()
+
+	slog.Info("LXZ 此时UI-APP已经初始化完成")
 
 	return nil
 }
@@ -565,6 +568,7 @@ func (a *App) Run() error {
 		})
 	}()
 
+	slog.Info("🚀 LXZ 开始运行UI-APP, 执行默认命令 defaultCmd")
 	if err := a.command.defaultCmd(true); err != nil {
 		return err
 	}
@@ -791,6 +795,7 @@ func (a *App) aliasCmd(*tcell.EventKey) *tcell.EventKey {
 }
 
 func (a *App) gotoResource(c, path string, clearStack, pushCmd bool) {
+	slog.Info("LXZ Going to resource", "c", c, "PATH", path)
 	err := a.command.run(cmd.NewInterpreter(c), path, clearStack, pushCmd)
 	if err != nil {
 		d := a.Styles.Dialog()
@@ -800,7 +805,6 @@ func (a *App) gotoResource(c, path string, clearStack, pushCmd bool) {
 
 // 往应用中注入一个组件 一般用于激活某个页面
 func (a *App) inject(c model.Component, clearStack bool) error {
-	slog.Info("Injecting component", c)
 	ctx := context.WithValue(context.Background(), internal.KeyApp, a)
 	if err := c.Init(ctx); err != nil {
 		slog.Error("Component init failed",
@@ -809,9 +813,11 @@ func (a *App) inject(c model.Component, clearStack bool) error {
 		)
 		return err
 	}
+	slog.Info("LXZ Injecting component 💉", "component", c.Name())
 	if clearStack {
 		a.Content.Clear()
 	}
+	// 将组件添加到应用的页面栈中
 	a.Content.Push(c)
 
 	return nil

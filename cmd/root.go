@@ -6,12 +6,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"log/slog"
-	"os"
-	"runtime/debug"
-	"strings"
-	"time"
-
 	"github.com/derailed/k9s/internal/client"
 	"github.com/derailed/k9s/internal/color"
 	"github.com/derailed/k9s/internal/config"
@@ -23,6 +17,11 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/tools/clientcmd/api"
+	"log/slog"
+	"os"
+	"runtime/debug"
+	"strings"
+	"time"
 )
 
 const (
@@ -104,7 +103,7 @@ func run(*cobra.Command, []string) error {
 
 	slog.SetDefault(slog.New(tint.NewHandler(logFile, &tint.Options{
 		Level:      parseLevel(*k9sFlags.LogLevel),
-		TimeFormat: time.RFC3339,
+		TimeFormat: time.Kitchen,
 	})))
 
 	cfg, err := loadConfiguration()

@@ -5,6 +5,7 @@ package view
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/derailed/k9s/internal/model"
 	"github.com/derailed/k9s/internal/ui"
@@ -36,6 +37,7 @@ func (p *PageStack) Init(ctx context.Context) (err error) {
 
 // StackPushed notifies a new page was added.
 func (p *PageStack) StackPushed(c model.Component) {
+	slog.Info("LXZ PageStack StackPushed", "component", c.Name())
 	c.Start()
 	p.app.SetFocus(c)
 }

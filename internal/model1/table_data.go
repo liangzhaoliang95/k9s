@@ -428,6 +428,7 @@ func (t *TableData) Update(rows Rows) {
 	var blankDelta DeltaRow
 	t.mx.Lock()
 	for _, row := range rows {
+		//slog.Info("Updating row", "row", row.Fields)
 		kk.Insert(row.ID)
 		if empty {
 			t.rowEvents.Add(NewRowEvent(EventAdd, row))
@@ -454,6 +455,7 @@ func (t *TableData) Update(rows Rows) {
 	if !empty {
 		t.Delete(kk)
 	}
+	//slog.Info("LXZ TableData update complete")
 }
 
 // Delete removes items in cache that are no longer valid.

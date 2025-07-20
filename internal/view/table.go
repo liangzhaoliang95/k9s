@@ -33,6 +33,7 @@ type Table struct {
 
 // NewTable returns a new viewer.
 func NewTable(gvr *client.GVR) *Table {
+	slog.Info("LXZ Table view will be created", "gvr", gvr)
 	t := Table{
 		Table: ui.NewTable(gvr),
 	}
@@ -145,6 +146,8 @@ func (t *Table) App() *App {
 
 // Start runs the component.
 func (t *Table) Start() {
+
+	slog.Info("LXZ Table component will start", "component", t.Name())
 	t.Stop()
 	t.CmdBuff().AddListener(t)
 	t.Styles().AddListener(t.Table)
