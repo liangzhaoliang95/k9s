@@ -110,9 +110,9 @@ func (a *App) Init(version string, _ int) error {
 		return err
 	}
 
-	// 面包屑组件添加监听
+	// 面包屑组件添加监听 当content变化时会更新面包屑组件
 	a.Content.AddListener(a.Crumbs())
-	// 菜单组件添加监听
+	// 菜单组件添加监听 当content变化时会更新菜单组件
 	a.Content.AddListener(a.Menu())
 	// 快捷键+数据初始化
 	a.App.Init()

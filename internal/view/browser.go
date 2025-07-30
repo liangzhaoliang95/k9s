@@ -324,6 +324,7 @@ func (b *Browser) TableNoData(mdata *model1.TableData) {
 
 // TableDataChanged notifies view new data is available.
 func (b *Browser) TableDataChanged(mdata *model1.TableData) {
+	// LXZ 模型数据变化驱动UI变化
 	var cancel context.CancelFunc
 	b.mx.RLock()
 	cancel = b.cancelFn

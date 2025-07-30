@@ -200,6 +200,7 @@ func (t *Table) Peek() *model1.TableData {
 	return t.data.Clone()
 }
 
+// LXZ 定时刷新获取数据
 func (t *Table) updater(ctx context.Context) {
 	bf := backoff.NewExponentialBackOff()
 	bf.InitialInterval, bf.MaxElapsedTime = initRefreshRate, maxReaderRetryInterval
@@ -267,7 +268,7 @@ func (t *Table) list(ctx context.Context, a dao.Accessor) ([]runtime.Object, err
 }
 
 func (t *Table) reconcile(ctx context.Context) error {
-	// 解调数据,定时刷新列表
+	// LXZ 解调数据,定时刷新列表
 	var (
 		oo  []runtime.Object
 		err error
