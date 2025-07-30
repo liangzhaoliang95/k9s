@@ -93,11 +93,14 @@ func (s *Stack) AddListener(l StackListener) {
 // Push adds a new item.
 func (s *Stack) Push(c Component) {
 	if top := s.Top(); top != nil {
+		slog.Info("🈲LXZ Stopping top component before pushing new one", "component", top.Name())
 		top.Stop()
 	}
 
 	s.mx.Lock()
+	slog.Info("LXZ Pushing component onto content pageStack", "component", c.Name(), "before-length", len(s.components))
 	s.components = append(s.components, c)
+	slog.Info("LXZ Pushing component onto content pageStack", "component", c.Name(), "after-length", len(s.components))
 	s.mx.Unlock()
 	slog.Info("LXZ Pushing component onto content pageStack will notify⛔", "component", c.Name())
 	s.notify(StackPush, c)
@@ -105,6 +108,9 @@ func (s *Stack) Push(c Component) {
 
 // Pop removed the top item and returns it.
 func (s *Stack) Pop() (Component, bool) {
+
+	slog.Info("LXZ Popping component from content pageStack", "length", len(s.components))
+
 	if s.Empty() {
 		return nil, false
 	}
@@ -175,7 +181,7 @@ func (s *Stack) Top() Component {
 func (s *Stack) notify(a StackAction, c Component) {
 	slog.Info("LXZ exec notify 🚨", "action", a, "component", c.Name(), "listeners", len(s.listeners))
 	for _, l := range s.listeners {
-		slog.Info("LXZ Notifying listener 📣", "listener", l)
+		//slog.Info("LXZ Notifying listener 📣", "listener", l)
 		switch a {
 		case StackPush:
 			l.StackPushed(c)

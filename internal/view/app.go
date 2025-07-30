@@ -813,7 +813,7 @@ func (a *App) inject(c model.Component, clearStack bool) error {
 		)
 		return err
 	}
-	slog.Info("LXZ Injecting component 💉", "component", c.Name())
+	slog.Info("LXZ Injecting component 💉", "component", c.Name(), "cleanStack", clearStack)
 	if clearStack {
 		a.Content.Clear()
 	}

@@ -378,7 +378,7 @@ func (c *Command) exec(p *cmd.Interpreter, gvr *client.GVR, comp model.Component
 		v := contextRX.ReplaceAllString(p.GetLine(), "")
 		c.app.Config.SetActiveView(v)
 	}
-	slog.Info("LXZ inject component 💉", "component", comp)
+	slog.Info("LXZ inject component 💉", "component", comp, "gvr", gvr.String(), "clearStack", clearStack, "pushCmd", pushCmd)
 	if err := c.app.inject(comp, clearStack); err != nil {
 		return err
 	}
